@@ -10,7 +10,7 @@ def trapecios (intervalo,f,pasos):
 	Espaciado = np.linspace(intervalo[0], intervalo[-1], pasos)
 	alfa = f(intervalo[0])
 
-	for i in range(1,len(Espaciado)):
+	for i in range(1,len(Espaciado)-1):
 
 		alfa += 2*f(Espaciado[i])
 
@@ -26,7 +26,7 @@ def Simpsons (intervalo, f, pasos):
 	Espaciado = np.linspace(intervalo[0], intervalo[-1], pasos)
 	alfa = f(intervalo[0])
 
-	for i in range(1,len(Espaciado)):
+	for i in range(1,len(Espaciado)-1):
 		if i % 2 == 0:
 			alfa += 4*f(Espaciado[i])
 		else:
@@ -36,20 +36,23 @@ def Simpsons (intervalo, f, pasos):
 
 	return I
 
-#I = Simpsons(intervalo, f, pasos)
+# I = Simpsons(intervalo, f, pasos)
 
 # print(I)
 
-evaluacion = np.logspace(2,4,100).astype(int)
+
+evaluacion = np.logspace(2,4,20).astype(int)*2
 IntegralT = []
 IntegralS = []
 
+print(evaluacion)
 for i in range(len(evaluacion)):
 	IntegralT.append(trapecios(intervalo,f,evaluacion[i]))
 	IntegralS.append(Simpsons(intervalo,f,evaluacion[i]))
 
-plt.semilogx(evaluacion,IntegralS,'r')
-plt.semilogx(evaluacion,IntegralT,'g')
+plt.semilogx(evaluacion,IntegralS,'ro',label="Simpson")
+plt.semilogx(evaluacion,IntegralT,'gs',label="Trapecios")
+plt.legend()
 plt.ylabel("Valor de la integral")
 plt.xlabel("Número de intervalos en integral")
 plt.show()
