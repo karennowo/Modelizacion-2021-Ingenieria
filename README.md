@@ -20,3 +20,9 @@ haga una carpeta con su nombre dentro de la carpeta "Consultas"
 Por cada nuevo ejercicio haga una nueva carpeta.
 
 Cuando agregue contenido, haga un 'pull request' a este repositorio
+
+
+Material Extra
+======================
+
+Pueden revisar el repositorio del [MOOC](https://github.com/numerical-mooc/numerical-mooc)
