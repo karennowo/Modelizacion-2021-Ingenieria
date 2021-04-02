@@ -6,12 +6,31 @@ I0 = 0.1
 R0 = 0.0
 
 def funcion (i):
+       #MDF-COMMENT lo que no me gusta de este approach es que necesitas 3 llamadas a la función ,
+       #MDF-COMMENT cuando podrías hacerlo con una sola
+       #MDF-COMMENT y por otro lado, los valores del paso anterior (S,I,R) tendrían que ser los verdaderos 
+       #MDF-COMMENT argumentos de tu función.
 	dS = lambda t,S,I,R: -0.35*I*S
 	dI = lambda t,S,I,R: 0.35*I*S - 0.1*I
 	dR = lambda t,S,I,R: 0.1*I
 	Der = [dS, dI, dR]
 
 	return Der[i]
+
+V#MDF-COMMENT a ver si me sale.
+def funcionv(Y):
+    """
+    Parámetros
+    ==========
+    Y = [S, I, R]
+    """
+    dY = [ 
+            -0.35*Y[1]*Y[0],
+            0.35*Y[1]*Y[0]-0.1*Y[1],
+            0.1*Y[1]
+        ]
+    return dY
+
 
 
 t = np.linspace(0, 100, 1000)
