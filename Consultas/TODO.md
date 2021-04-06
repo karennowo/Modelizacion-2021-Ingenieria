@@ -2,6 +2,9 @@ Consultas para revisar
 =======================
 
 [ ] Consulta de  ManuGSabato:
-   [ ] Simpson no da bien  (diferencia entre par e impar)
+   [X] Simpson no da bien  (diferencia entre par e impar)
    [ ] Integracion da errores raros
+
+[ ]  Consultas Xaier
+   [ ] Revisar Cuadratura de Gauss, con duda
 
