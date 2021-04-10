@@ -60,18 +60,28 @@ plt.show()
 ErrR = []
 ErrE = []
 ErrH = []
-maximo = 50
+maximo = 500 #MDF-COMMENT 50 son pocos puntos
 
-for i in range(1,maximo):
+#MDF-COMMENT el tema del rango lineal es que tenes mucha información 'repetida', es mejor hacerlo en escala logarítmica:
+nintervalos = np.logspace(1,np.log10(maximo), 10).astype(int)
+for i in nintervalos: #range(1,maximo):
 	yR = RK(f, i, y0, intervalo)
 	yE = Euler(f, i, y0, intervalo)
 	yH = Heun(f, i, y0, intervalo)
 	ErrR.append(abs(75.3389626-yR[-1])/75.3389626)
 	ErrE.append(abs(75.3389626-yE[-1])/75.3389626)
 	ErrH.append(abs(75.3389626-yH[-1])/75.3389626)
+#MDF-COMMENT yo lo pondría con escala logarítmica
+#plt.plot(range(1,maximo),ErrR,'r', label = "Runge-Kutta")
+#plt.plot(range(1,maximo),ErrE,'g', label = "Euler")
+#plt.plot(range(1,maximo),ErrH,'b', label = "Heun")
+plt.loglog(nintervalos,ErrR,'r', label = "Runge-Kutta")
+plt.loglog(nintervalos,ErrE,'g', label = "Euler")
+plt.loglog(nintervalos,ErrH,'b', label = "Heun")
+#MDF-COMMENT para entender lo que graficás, le tenes que poner nombre a los ejes !
+plt.ylabel('Error')
+plt.xlabel('numero de intervalos')
 
-plt.plot(range(1,maximo),ErrR,'r', label = "Runge-Kutta")
-plt.plot(range(1,maximo),ErrE,'g', label = "Euler")
-plt.plot(range(1,maximo),ErrH,'b', label = "Heun")
 plt.legend()
-plt.show()
+#MDF-COMMENTplt.show()
+plt.savefig('ResultadoRaro.pdf')
