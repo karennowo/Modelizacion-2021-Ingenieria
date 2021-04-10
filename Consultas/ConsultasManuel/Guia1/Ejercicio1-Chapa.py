@@ -34,16 +34,6 @@ MallaT = np.zeros((ny,nx))
 Temp = np.zeros(maximo)
 b = np.zeros(maximo)
 
-izquierda = []
-derecha = []
-
-for i in range(CdC[2],ny-CdC[3]):
-	izquierda.append(kvalue(0,i,nx))
-	derecha.append(kvalue(nx-1,i,nx))
-
-abajo = list(range(CdC[0],nx-CdC[1]))
-arriba = list(range(maximo - nx + CdC[0], maximo - CdC[1]))
-
 for i in range(CdC[0],nx-CdC[1]):
 	for j in range(CdC[2], ny-CdC[3]):
 		K = kvalue(i,j,nx)
@@ -81,6 +71,33 @@ for i in range(CdC[0],nx-CdC[1]):
 			Malla[K,(K + 1)]  = 1
 
 if CdC[0] == 1:
+	for i in range(CdC[2],ny-CdC[3]):
+		b[kvalue(0,i,nx)]= TIzq
+		
+if CdC[1] == 1:
+	for i in range(CdC[2],ny-CdC[3]):
+		b[kvalue(nx-1,i,nx)] = TDer
+
+if CdC[2] == 1:
+	for i in range(CdC[0],nx-CdC[1]):
+		b[i] = Tabajo
+
+if CdC[3] == 1:
+	for i in range(maximo - nx + CdC[0], maximo - CdC[1]):
+		b[i] = TArriba
+
+"""
+izquierda = []
+derecha = []
+
+for i in range(CdC[2],ny-CdC[3]):
+	izquierda.append(kvalue(0,i,nx))
+	derecha.append(kvalue(nx-1,i,nx))
+
+abajo = list(range(CdC[0],nx-CdC[1]))
+arriba = list(range(maximo - nx + CdC[0], maximo - CdC[1]))
+
+if CdC[0] == 1:
 	for i in izquierda:
 		b[i] = TIzq
 
@@ -95,6 +112,8 @@ if CdC[2] == 1:
 if CdC[3] == 1:
 	for i in arriba:
 		b[i] = TArriba
+
+"""
 
 T = np.linalg.solve(Malla, b)
 
