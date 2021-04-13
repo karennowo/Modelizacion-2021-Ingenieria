@@ -34,9 +34,14 @@ MallaT = np.zeros((ny,nx))
 Temp = np.zeros(maximo)
 b = np.zeros(maximo)
 
+#MDF-COMMENT no entiendo por qué CdC te dice el índice.
+#MDF-COMMENT no era que te decía el tipo de cdc ?
 for i in range(CdC[0],nx-CdC[1]):
 	for j in range(CdC[2], ny-CdC[3]):
 		K = kvalue(i,j,nx)
+                #MDF-COMMENT en realidad esta parte se corresponde con lo que no es una condición especial.
+                #MDF-COMMENT en el esquema del os if ..  elif, sería un 'else' para la condición general de los 
+                #MDF-COMMENT nodos internos
 		Malla[K,K] = -2*(1+beta**2)
 		if j == 0:
 			Malla[K,(K + nx)] = 2*beta**2
@@ -56,6 +61,10 @@ for i in range(CdC[0],nx-CdC[1]):
 			else:
 				Malla[K,(K - 1)]  = 1
 				Malla[K,(K + 1)]  = 1
+                #MDF-COMMENT fijate que con esta lógica, j == 0 EXCLUYE a i == 0, 
+                #MDF-COMMENT pero en realidad las dos condiciones no son excluyentes entre sí.
+                #MDF-COMMENT la manera de hacerlo es con una condicion extra en el if 
+                #MDF-COMMENT que a demás tiene que estar antes de las otros casos más generals.
 		elif i == 0:
 			Malla[K,(K - nx)] = beta**2
 			Malla[K,(K + nx)] = beta**2
@@ -65,6 +74,7 @@ for i in range(CdC[0],nx-CdC[1]):
 			Malla[K,(K + nx)] = beta**2
 			Malla[K,(K - 1)]  = 2
 		else:
+                    #MDF-COMMENT claro fijate que acá tiene que ir la condicion para la diagonal
 			Malla[K,(K + nx)] = beta**2
 			Malla[K,(K - nx)] = beta**2
 			Malla[K,(K - 1)]  = 1
@@ -127,5 +137,9 @@ MallaT[ny-1,0] = (MallaT[ny-1,1] + MallaT[ny-2,0])/2
 MallaT[ny-1,nx-1] = (MallaT[ny-1,nx-2] + MallaT[ny-2,nx-1])/2
 
 plt.imshow(MallaT, cmap="plasma")
+#MDF-COMMENT 
+plt.contour(MallaT)
+#MDF-COMMENT para que te quede un poco mejor:
+#MDF-COMMENT plt.contourf(MallaT)
 plt.colorbar()
 plt.show()
