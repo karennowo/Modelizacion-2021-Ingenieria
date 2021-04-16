@@ -23,15 +23,6 @@ for i in range(1,tsize):
 	for j in range(1,xsize-1):
 		MallaT[i,j] = MallaT[i-1,j] + Lambda*(MallaT[i-1,j+1] - 2* MallaT[i-1,j] + MallaT[i-1,j-1])
 
-"""
-
-"""
-Para criterio de convergencia puedo tomar que la diferencia al cuadrado entre las temperaturas en
-tiempo t y tiempo t-1 sea menor a un error que vos poner (que dependa del delta t que le pongo)
-"""
-
-
-"""
 X = np.linspace(0, Longitud, xsize)
 
 fig = plt.figure()
