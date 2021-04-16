@@ -3,8 +3,14 @@ Consultas para revisar
 
 [ ] Consulta de  ManuGSabato:
    [X] Simpson no da bien  (diferencia entre par e impar)
-   [ ] Integracion da errores raros
+   [ ]  Consulta Daniel Guerrero
+     [ ] 
+
+   [X] Integracion da errores raros
 
 [ ]  Consultas Xaier
-   [ ] Revisar Cuadratura de Gauss, con duda
+   [ ]  ver cnsulta 16/04/2021 
+   [X ] Revisar Cuadratura de Gauss, con duda
+
+
 
