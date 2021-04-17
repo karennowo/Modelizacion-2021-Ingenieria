@@ -5,7 +5,7 @@ from matplotlib import animation
 Deltat = 1
 TiempoF = 30
 Longitud = 10
-Deltax = 2
+Deltax = 0.1
 k = 0.835
 Lambda = k*Deltat/(Deltax**2)
 xsize = int(np.floor(Longitud/Deltax))
@@ -65,14 +65,21 @@ EN = [1]
 
 Mallatiempo = np.eye(xsize)
 Mallatiempo2 = np.eye(xsize)
+Mallatiempo3 = np.eye(xsize)
 
 for i in range(1,xsize-1):
 	Mallatiempo[i,i] =  (1 + 2*Lambda)
 	Mallatiempo[i,i-1] = - Lambda
 	Mallatiempo[i,i+1] = - Lambda
-	Mallatiempo2[i,i] =  (1 - 2*Lambda)
+
+	Mallatiempo2[i,i] =  2*(1 - Lambda)
 	Mallatiempo2[i,i-1] = Lambda
 	Mallatiempo2[i,i+1] = Lambda
+
+	Mallatiempo3[i,i] =  2*(1 + Lambda)
+	Mallatiempo3[i,i-1] = -Lambda
+	Mallatiempo3[i,i+1] = -Lambda
+
 
 while count < 1000:
 	TempI2 = np.linalg.solve(Mallatiempo, TempI)
@@ -86,13 +93,13 @@ while count < 1000:
 
 	count += 1
 
-#print(count)
+print(count)
 
 
 count2 = 0
 
 while count2 < 1000:
-	TempIN2 = np.linalg.solve(Mallatiempo, np.dot(Mallatiempo2,TempIN))
+	TempIN2 = np.linalg.solve(Mallatiempo3, np.dot(Mallatiempo2,TempIN))
 	EN.append(np.dot((TempIN - TempIN2),(TempIN - TempIN2)))
 
 	if EN[-1] < 1e-5:
@@ -103,7 +110,22 @@ while count2 < 1000:
 
 	count2 += 1
 
-#print(count2)
+print(count2)
+
+fig2,axe = plt.subplots(1,2,figsize = (20,10))
+axe[1].set_xlim([0,len(EN)])
+axe[1].set_ylim([min(EN[1:]),max(EN[1:])])
+
+axe[0].set_ylabel("Temperatura")
+axe[0].set_xlabel("Posición")
+
+axe[1].set_ylabel("Error ($|T_{i} - T_{i-1}|$)")
+axe[1].set_xlabel("Iteración")
+
+graf3 = animation.FuncAnimation(fig2, animacion2n, range(len(Tn)), fargs = (X,Tn,0), repeat = False, interval = 1)
+graf4 = animation.FuncAnimation(fig2, animacion3n, range(len(EN)), fargs = (EN,1), repeat = False, interval = 1)
+plt.show()
+
 
 plt.rc('axes',labelsize = 10)
 fig,axe = plt.subplots(1,2,figsize = (10,5))
@@ -115,13 +137,15 @@ axe[1].set_xlabel("Iteración")
 
 axe[0].set_xlim([0,len(E)])
 axe[0].set_ylim([min(E[1:]),max(E[1:])])
-axe[1].set_xlim([0,len(E)])
+axe[1].set_xlim([0,len(EN)])
 axe[1].set_ylim([min(E[1:]),max(E[1:])])
 
-graf1 = animation.FuncAnimation(fig, animacion3, range(len(E)), fargs = (E,0), repeat = False, interval = 10)
-graf2 = animation.FuncAnimation(fig, animacion3n, range(len(EN)), fargs = (EN,1), repeat = False, interval = 10)
+graf1 = animation.FuncAnimation(fig, animacion3, range(len(E)), fargs = (E,0), repeat = False, interval = 1)
+graf2 = animation.FuncAnimation(fig, animacion3n, range(len(EN)), fargs = (EN,1), repeat = False, interval = 1)
 
 plt.show()
+
+
 
 """
 
@@ -140,22 +164,6 @@ graf1 = animation.FuncAnimation(fig, animacion2, range(len(T)), fargs = (X,T), r
 graf2 = animation.FuncAnimation(fig, animacion3, range(len(E)), fargs = (E,), repeat = False, interval = 10)
 plt.show()
 
-
-
-
-
-fig2,axe = plt.subplots(1,2,figsize = (20,10))
-axe[1].set_xlim([0,len(EN)])
-axe[1].set_ylim([min(EN[1:]),max(EN[1:])])
-
-axe[0].set_ylabel("Temperatura")
-axe[0].set_xlabel("Posición")
-
-axe[1].set_ylabel("Error ($|T_{i} - T_{i-1}|$)")
-axe[1].set_xlabel("Iteración")
-
-graf3 = animation.FuncAnimation(fig2, animacion2n, range(len(Tn)), fargs = (X,Tn), repeat = False, interval = 10)
-graf4 = animation.FuncAnimation(fig2, animacion3n, range(len(EN)), fargs = (EN,), repeat = False, interval = 10)
-plt.show()
-
 """
+
+
