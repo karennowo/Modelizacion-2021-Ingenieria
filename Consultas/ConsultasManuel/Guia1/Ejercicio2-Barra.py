@@ -6,13 +6,11 @@ from matplotlib import animation, use
 import socket
 #MDF-COMMENT ojo con los punteros:
 import copy
-if socket.gethostname() == "mlaptopII":
-    use('Qt5Agg')
 
 Deltat = 0.1
 TiempoF = 30 #MDF-COMMENT no te alcanza con 30 seg
 Longitud = 10
-Deltax = 0.5
+Deltax = 0.1
 k = 0.835
 Lambda = k*Deltat/(Deltax**2)
 xsize = int(np.floor(Longitud/Deltax))
@@ -115,9 +113,9 @@ count2 = 0
 #MDF-COMMENT fijate que mallatiempo2 y mallatiempo 3 son independientes del tiempo, por lo tanto:
 MDFMATRIX = np.matmul( np.linalg.inv(Mallatiempo3), Mallatiempo2 )
 while count2 < 1000:
-        #MDF-COMMENT TempIN2 = np.linalg.solve(Mallatiempo3, np.dot(Mallatiempo2,TempIN))
+        TempIN2 = np.linalg.solve(Mallatiempo3, np.dot(Mallatiempo2,TempIN))
         #MDF-COMMENT Ojo con los punteros !
-        TempIN2 = np.dot(MDFMATRIX, Tn[-1])
+        # TempIN2 = np.dot(np.longdouble(MDFMATRIX), np.longdouble(Tn[-1]))
         EN.append(np.dot((TempIN - TempIN2),(TempIN - TempIN2)))
 
         if EN[-1] < 1e-5:
@@ -183,5 +181,15 @@ graf2 = animation.FuncAnimation(fig, animacion3, range(len(E)), fargs = (E,), re
 plt.show()
 
 """
+np.savetxt('MATRIX_Lambda={:.2f}'.format(Lambda), MDFMATRIX, fmt="%5.2e")
+plt.figure()
+plt.imshow(np.log10(np.abs(MDFMATRIX[1:-1, :])))
+cbar = plt.colorbar()
+cbar.set_label('$log_{10} |M_1 ^{-1} M_2|$')
+plt.title('$\lambda$ = {:.2f}'.format(Lambda) )
+plt.savefig('Matriz_CN_={:.2f}.pdf'.format(Lambda))
 
-
+plt.figure()
+plt.plot(np.transpose(Tn))
+plt.title('$\lambda$ = {:.2f}'.format(Lambda))
+plt.savefig('CN_Lambda={:.2f}.pdf'.format(Lambda))
