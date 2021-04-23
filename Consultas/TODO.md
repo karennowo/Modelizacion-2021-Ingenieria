@@ -10,4 +10,7 @@ Consultas para revisar
 [ ] Daniel
  - revisar ultimo subido
 
+[ ] Andres
+ -  ver lo que subió
+
 
