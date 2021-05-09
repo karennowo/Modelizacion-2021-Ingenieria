@@ -1,10 +1,16 @@
 Consultas para revisar
 =======================
 
-[ ] Consulta de  ManuGSabato:
-   [X] Simpson no da bien  (diferencia entre par e impar)
-   [ ] Integracion da errores raros
+[ ] Xavier: 
+   - revisar ejercicios guia 1
 
-[ ]  Consultas Xaier
-   [ ] Revisar Cuadratura de Gauss, con duda
+[ ]  Karen
+  - Revisar ejercicios guia 0
+
+[ ] Daniel
+ - revisar ultimo subido
+
+[ ] Andres
+ -  ver lo que subió
+
 
