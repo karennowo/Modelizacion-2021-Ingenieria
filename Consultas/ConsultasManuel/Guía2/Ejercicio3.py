@@ -2,54 +2,63 @@ import numpy as np
 np.set_printoptions(precision = 4, linewidth = 150)
 import matplotlib.pyplot as plt
 
-f = lambda x,T,L,A,E: -T*(x**3 - L**3)/(6*A*E)
+d = lambda x,T,L,A,E: - T*(x**3 - L**3)/(6*A*E)
+f = lambda x,T,A: - T*(x**2)/(2*A)
 
 Largo = 1.50
 T = -200000
-elementos = 3
+elementos = 10
 A = 0.001
 E = 210e9
 
 Desplazamientos = np.zeros(elementos + 1)
 Fuerzas = np.zeros(elementos + 1)
 
-VectLong = np.linspace(0, Largo, elementos+1)
+VectLong = np.linspace(0, Largo, elementos + 1)
 
-KGlob = np.zeros((elementos + 1,elementos + 1))
+KGlob = np.zeros((elementos + 1, elementos + 1))
 Kloc = np.eye(2)
 Kloc[0,1] = -1
 Kloc[1,0] = -1
-
+Tensión = []
 Ftot = T*(VectLong[1]**2 - VectLong[0]**2)/2
 Fvec = np.zeros(2)
+CentroElem = []
 
 for i in range(elementos):
 
-    #MDF-COMMENT impecable
-	Fuerzas[i] += Ftot/3 + (VectLong[i+1]-VectLong[i])*T*VectLong[i]/2
-	Fuerzas[i+1] += Ftot*2/3 + (VectLong[i+1]-VectLong[i])*T*VectLong[i]/2
+	Fuerzas[i] += Ftot/3 + (VectLong[i + 1] - VectLong[i])*T*VectLong[i]/2
+	Fuerzas[i+1] += Ftot*2/3 + (VectLong[i + 1] - VectLong[i])*T*VectLong[i]/2
 
-	K = E*A/(VectLong[i+1]-VectLong[i])
+	K = E*A/(VectLong[i + 1] - VectLong[i])
+	KGlob[i : i + 2, i : i + 2] += Kloc*K
 
-	KGlob[i:i+2,i:i+2] += Kloc*K
-
-print(np.arange(elementos))
-
-#MDF-COMMENT en realidad cuando estas adentro de un paréntesis no hace falta la continuacion de linea.
-#MDF-COMMENT a demas por legibliidad conviene escribir un poco distinto:
-#MDF-COMMENT Desplazamientos[0:elementos] = np.linalg.solve(KGlob[np.ix_(np.arange(elementos),\
-#MDF-COMMENT 	np.arange(elementos))], Fuerzas[np.arange(elementos)])
-Desplazamientos[0:elementos] = np.linalg.solve(
-        KGlob[np.ix_(np.arange(elementos), np.arange(elementos))],
-        Fuerzas[np.arange(elementos)] #MDF-COMMENT y acordate que aca te falta la parte delos desplazamientos
-        )
+Desplazamientos[0:elementos] = np.linalg.solve(KGlob[np.ix_(np.arange(elementos),\
+	np.arange(elementos))], Fuerzas[np.arange(elementos)])
 Respuesta = np.dot(KGlob[elementos,np.arange(elementos + 1)], Desplazamientos) - Fuerzas[elementos]
 
-plt.plot(np.linspace(0, Largo, 100), f(np.linspace(0, Largo, 100),T,Largo,A,E),'r')
-plt.plot(np.linspace(0, Largo, elementos+1), Desplazamientos)
-#MDF-COMMENT y te quedaria ponerle una leyenda para que se entinenda.
+for i in range(elementos):
+	Tensión.append(E*np.array(
+		[-1/(VectLong[i+1] - VectLong[i]), 1/(VectLong[i+1] - VectLong[i])]).dot(Desplazamientos[i:i+2]
+								))
+	CentroElem.append((VectLong[i + 1] + VectLong[i])/2)
 
-#MDF-COMMENT preguntas:
-#MDF-COMMENT 1. Como evoluciona cuando cambias el numero de elementos ?
-#MDF-COMMENT 2. te falta calcular las tensiones no ?
+plt.figure(figsize = (12,8))
+plt.plot(np.linspace(0, Largo, 100), d(np.linspace(0, Largo, 100),T,Largo,A,E),'r', label = 'Ecuación')
+plt.plot(np.linspace(0, Largo, elementos + 1), Desplazamientos, label = 'Aproximación')
+plt.legend()
 plt.show()
+
+plt.figure(figsize = (12,8))
+plt.plot(np.linspace(0, Largo, 100), f(np.linspace(0, Largo, 100),T,A),'r', label = 'Ecuación')
+plt.plot(CentroElem, Tensión, 's', label = 'Aproximación')
+plt.step(CentroElem, Tensión, 'k', where = 'mid', label = 'Step')
+plt.legend()
+plt.show()
+
+#Cada elemento tiene tensiones constantes Sigma = E * [-1/L 1/L]*[d1, d2],son constantes porque 
+# uso una aproximación tal que la tensión dentro de cada elemento es constante
+#
+#TENY = np.vstack( ([0.0], self.Sig) )
+#        plt.step(self.MN[:, 0], TENY, 'r',
+#                where='pre', label='Solución Numérica')
