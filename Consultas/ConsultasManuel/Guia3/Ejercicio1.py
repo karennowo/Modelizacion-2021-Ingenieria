@@ -3,33 +3,44 @@ import matplotlib.pyplot as plt
 import gmsh
 np.set_printoptions(precision = 4, linewidth = 150)
 
-#MatrizNodos = np.array([[0, 0], [0, 10], [20, 10], [20, 0], [10, 5]])
-#MatrizConectividad = np.array([[0, 1, 4], [1, 2, 4], [2, 3, 4], [0, 3, 4]])
+#MatrizNodosB = np.array([[0, 0], [0, 10], [20, 10], [20, 0], [10, 5]])
+#MatrizConectividadB = np.array([[0, 1, 4], [1, 2, 4], [2, 3, 4], [0, 3, 4]])
 
-MatrizNodos = np.array([[0, 0], [0, 10], [20, 10], [20, 0]])
-MatrizConectividad = np.array([[0, 1, 2], [2, 3, 0]])
+#MatrizNodos = np.array([[0, 0], [0, 10], [20, 10], [20, 0]])
+#MatrizConectividad = np.array([[0, 1, 2], [2, 3, 0]])
 
+MatrizNodos = np.loadtxt("MatrizNodos2D.dat")
+MatrizConectividad = np.loadtxt("MatrizConectividad2D.dat", dtype = int) - 1
+TraccionadoX = np.loadtxt("TraccionadosX.dat", dtype = int) - 1
+Empotrado = np.loadtxt("Empotrados.dat", dtype = int) - 1
 elementos = MatrizConectividad.shape[0]
 nodos = MatrizNodos.shape[0]
-
-R = [4,5,6,7]
-S = [0,1,2,3]
-
-#R = [4,5,6,7,8,9]
-#S = [0,1,2,3]
-
-KLocal = np.zeros((6, 6))
-KGlobal = np.zeros((2*nodos, 2*nodos))
-
 Espesor = 1
 u = np.zeros(2*nodos)
 F = np.zeros(2*nodos)
-
-F[4] = 5000
-F[6] = 5000
-
+Fuerza = 10000/len(TraccionadoX)
 poisson = 0.3
 E = 30e6
+
+#print(MatrizConectividad)
+#print(MatrizNodos)
+
+S = []
+
+for i in Empotrado:
+	S.append([2*i, 2*i + 1])
+
+S = np.ravel(S)
+
+R = [i for i in range(2*nodos) if i not in S]
+
+R = np.ravel(R)
+
+for i in TraccionadoX:
+	F[2*i] = Fuerza
+
+KLocal = np.zeros((6, 6))
+KGlobal = np.zeros((2*nodos, 2*nodos))
 
 A = []
 MatAr = np.zeros((3,3))
@@ -79,19 +90,22 @@ for i in range(elementos):
 
 	IndicA = []
 	Indic = []
+
 	for m in range(3):
 		IndicA.append(np.linspace(2*N[m], (2*N[m] + 1), 2))
+
 	Indic = np.ravel(IndicA).astype(int)
 
 	KGlobal[np.ix_(Indic,Indic)] += KLocal
 
-#print(KGlobal/(375000/0.91))
+#print(KGlobal/(KGlobal.max()))
+#print(KGlobal*(0.91/375000))
 
 u[R] = np.linalg.solve(KGlobal[np.ix_(R,R)], F[R] - KGlobal[np.ix_(R, S)].dot(u[S]))
 F[S] = KGlobal[S,:].dot(u)
 
-#print(F)
-#print(u)
+print(F)
+print(u)
 
 for i in range(elementos):
 	N = MatrizConectividad[i,:]
