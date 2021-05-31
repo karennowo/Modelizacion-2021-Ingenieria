@@ -94,8 +94,10 @@ for i in range(elementos):
 	for m in range(3):
 		IndicA.append(np.linspace(2*N[m], (2*N[m] + 1), 2))
 
+##         clap      clap    clap    clap   ## 
 	Indic = np.ravel(IndicA).astype(int)
 
+##         clap      clap    clap    clap   ## 
 	KGlobal[np.ix_(Indic,Indic)] += KLocal
 
 #print(KGlobal/(KGlobal.max()))
