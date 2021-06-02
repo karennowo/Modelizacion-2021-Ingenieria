@@ -7,7 +7,7 @@ np.set_printoptions(precision = 4, linewidth = 150)
 gmsh.initialize()
 gmsh.model.add('test')
 
-lc = 20
+lc = 8
 L = 10
 
 #Primero puntos
@@ -35,6 +35,8 @@ Traccionado = gmsh.model.addPhysicalGroup(1, [l2])
 gmsh.model.setPhysicalName(1, Traccionado, 'Traccionado')
 Superficie = gmsh.model.addPhysicalGroup(2, [S1])
 gmsh.model.setPhysicalName(2, Superficie, 'Superficie')
+EsquinasTracc = gmsh.model.addPhysicalGroup(0, [p2, p3])
+gmsh.model.setPhysicalName(0, EsquinasTracc, 'Esq')
 
 gmsh.model.geo.synchronize()
 
@@ -62,15 +64,45 @@ MatrizConectividad = ELEMENTS.reshape([ETAGS.shape[0],3])
 
 NodosEmpotrados = gmsh.model.mesh.get_nodes_for_physical_group(1,Empotrado)
 NodosTraccionados = gmsh.model.mesh.get_nodes_for_physical_group(1, Traccionado)
-
-print(NodosTraccionados)
-print(NodosEmpotrados)
+NodosEsq = gmsh.model.mesh.get_nodes_for_physical_group(0, EsquinasTracc)
 
 np.savetxt('MatrizNodos2D.dat', MatrizNodos, fmt='%1.3f')
 np.savetxt('MatrizConectividad2D.dat', MatrizConectividad, fmt = '%d')
 np.savetxt('TraccionadosX.dat', NodosTraccionados[0], fmt = '%d')
 np.savetxt('Empotrados.dat', NodosEmpotrados[0], fmt = '%d')
+np.savetxt('EsqTracc.dat', NodosEsq[0], fmt = '%d')
 
-gmsh.model.geo.synchronize()
+DESP = np.loadtxt("Desplazamientos.dat")
+Tensiones = np.loadtxt("Tensiones.dat")
+
+#Desplazamiento en función de la coordenada x
+#plt.plot(MatrizNodos[:,0], DESP[:,0])
+#plt.show()
+
+#Para agregar al modelo tengo que inicial una visualización
+desps = gmsh.view.add("desp")
+ViewTension = gmsh.view.add("Tension")
+
+#Guardar los datos en la visualización, test es el nombre del modelo, NodeData es para decir que es info de nodos
+#porque la info de desplazamiento está asociado a los nodos del mallado, lo de NodeInfo son los números de los nodos,
+#DESP son los desplazamientos que quiero graficar y puede haber términos para evoluciones temporales, por último la 
+#dimensionalidad del vector que estoy guardando (desplazamientos son un vector con tres dimensiones)
+Desps = gmsh.view.addModelData(desps, 0, 'test', 'NodeData', NodeInfo[0], DESP, numComponents = 3)
+Tens = gmsh.view.addModelData(ViewTension, 0, 'test', 'ElementData', ETAGS, Tensiones[:,0].reshape(-1,1), numComponents = 1)
+
+#Si tengo dependencia temporal: (reshape(-1,1) convierte filas en columnas)
+
+#Temps = gmsh.view.add("Temperaturas")
+#
+#for i in range(100):
+#	gmsh.view.addModelData(Temps, i, 'test', 'NodeData', NodeInfo[0], MatrizNodos[:,0].reshape(-1,1)*i, numComponents = 1)
+
+#Guardado de mallado
+
+# gmsh.option.setNumber("Mesh.MshFileVersion", 2.2)
+# gmsh.write('TestMeshView_in.msh')
+# gmsh.view.write(1,"TestMeshView_out.msh", append = True)
+
+#gmsh.model.geo.synchronize()
 gmsh.fltk.run()
 gmsh.finalize()

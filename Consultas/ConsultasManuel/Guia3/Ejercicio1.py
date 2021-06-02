@@ -13,12 +13,15 @@ MatrizNodos = np.loadtxt("MatrizNodos2D.dat")
 MatrizConectividad = np.loadtxt("MatrizConectividad2D.dat", dtype = int) - 1
 TraccionadoX = np.loadtxt("TraccionadosX.dat", dtype = int) - 1
 Empotrado = np.loadtxt("Empotrados.dat", dtype = int) - 1
+EsquinasTracc = np.loadtxt("EsqTracc.dat", dtype = int) - 1
+
 elementos = MatrizConectividad.shape[0]
 nodos = MatrizNodos.shape[0]
 Espesor = 1
 u = np.zeros(2*nodos)
 F = np.zeros(2*nodos)
-Fuerza = 10000/len(TraccionadoX)
+FuerzaDistr = 1000
+Fuerza = 10000
 poisson = 0.3
 E = 30e6
 
@@ -33,11 +36,15 @@ for i in Empotrado:
 S = np.ravel(S)
 
 R = [i for i in range(2*nodos) if i not in S]
-
 R = np.ravel(R)
 
+
 for i in TraccionadoX:
-	F[2*i] = Fuerza
+	F[2*i] = Fuerza/(len(TraccionadoX)-1)
+for i in EsquinasTracc:
+	F[2*i] -= Fuerza/(2*(len(TraccionadoX)-1))
+
+print(F)
 
 KLocal = np.zeros((6, 6))
 KGlobal = np.zeros((2*nodos, 2*nodos))
@@ -106,8 +113,8 @@ for i in range(elementos):
 u[R] = np.linalg.solve(KGlobal[np.ix_(R,R)], F[R] - KGlobal[np.ix_(R, S)].dot(u[S]))
 F[S] = KGlobal[S,:].dot(u)
 
-print(F)
-print(u)
+#print(F)
+#print(u)
 
 for i in range(elementos):
 	N = MatrizConectividad[i,:]
@@ -121,3 +128,13 @@ for i in range(elementos):
 	Tensiones.append(np.dot(D, np.dot(Btot[i], u[Indic])))
 
 print(Tensiones)
+#print(Tensiones)
+Desplazamientos = np.zeros((nodos,3))
+for i in range(nodos):
+	Desplazamientos[i,0] = u[2*i]
+	Desplazamientos[i,1] = u[2*i + 1]
+
+#print(np.array(Tensiones))
+
+np.savetxt('Desplazamientos.dat', Desplazamientos, fmt='%1.5f')
+np.savetxt('Tensiones.dat', np.array(Tensiones), fmt='%1.5f')
